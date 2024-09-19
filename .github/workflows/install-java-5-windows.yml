@@ -25,13 +25,6 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value "JAVA_HOME=C:\Program Files\Java\jdk1.5.0_22"
         Add-Content -Path $env:GITHUB_ENV -Value "PATH=%JAVA_HOME%\bin;$env:PATH"
 
-    # - name: Set up Java
-    #   uses: actions/setup-java@v4
-    #   with:
-    #     java-version: '7'
-    #     distribution: 'temurin'
-    #     architecture: x64
-
     - name: Verify Java installation
       run: java -version
 
