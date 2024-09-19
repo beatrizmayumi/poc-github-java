@@ -1,0 +1,17 @@
+<project name="HelloWorld" default="compile">
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="mkdir">
+        <mkdir dir="build/classes"/>
+    </target>
+
+    <target name="compile" depends="clean, mkdir">
+        <javac srcdir="src" destdir="build/classes"/>
+    </target>
+
+    <target name="run" depends="compile">
+        <java classname="HelloWorld" classpath="build/classes"/>
+    </target>
+</project>

@@ -1,0 +1,50 @@
+name: Install Java 5 on Linux
+
+on: 
+  # push: 
+    # branches-ignore: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update
+    
+    - name: Install Java 5
+      run: |
+         cd src/bin/java5
+         chmod +x jdk-1_5_0_22-linux-i586.bin
+         ./jdk-1_5_0_22-linux-i586.bin > /dev/null < <(echo yes)
+         mv jdk1.5.0_22 /opt/jdk1.5.0_22
+
+    - name: Setup Java 5 environment
+      run: |
+        echo "JAVA_HOME=/opt/jdk1.5.0_22" >> $GITHUB_ENV
+        echo "PATH=/opt/jdk1.5.0_22/bin:$PATH" >> $GITHUB_ENV
+            
+    - name: Verify Java installation
+      run: java -version
+
+    - name: Download and install Ant 1.8.2
+      run: |
+        wget https://archive.apache.org/dist/ant/binaries/apache-ant-1.8.2-bin.tar.gz
+        tar -xzf apache-ant-1.8.2-bin.tar.gz
+        sudo mv apache-ant-1.8.2 /opt/ant
+        echo "ANT_HOME=/opt/ant" >> $GITHUB_ENV
+        echo "PATH=/opt/ant/bin:$PATH" >> $GITHUB_ENV
+  
+    - name: Verify Ant installation
+      run: ant -version
+
+    - name: Build with Ant
+      run: ant compile
+
+    - name: Run tests
+      run: ant run

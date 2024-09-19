@@ -1,0 +1,46 @@
+name: Install Java 7 on Windows
+
+on: 
+  # push: 
+    # branches-ignore: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Java 7
+      run: Start-Process -FilePath .\src\bin\java7\jre-7u80-windows-x64.exe -ArgumentList "/s /INSTALLDIRPUBJRE=C:\Program Files\Java\jre1.7.0_80\" -NoNewWindow -Wait
+      shell: pwsh
+    
+    - name: Set up Java 7 environment
+      run: |
+        # setx /M JAVA_HOME "C:\Program Files\Java\jre1.7.0_80"
+        # setx /M PATH "%PATH%;%JAVA_HOME%\bin"
+        Add-Content -Path $env:GITHUB_ENV -Value "JAVA_HOME=C:\Program Files\Java\jre1.7.0_80"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=%JAVA_HOME%\bin;$env:PATH"
+
+    - name: Verify Java installation
+      run: java -version
+
+    - name: Download and install Ant 1.8.2
+      run: |
+        Invoke-WebRequest -Uri https://archive.apache.org/dist/ant/binaries/apache-ant-1.8.2-bin.zip -OutFile apache-ant-1.8.2-bin.zip
+        Expand-Archive -Path apache-ant-1.8.2-bin.zip -DestinationPath $env:USERPROFILE\ant
+        echo "ANT_HOME=$env:USERPROFILE\ant\apache-ant-1.8.2" >> $env:GITHUB_ENV
+        echo "PATH=$env:USERPROFILE\ant\apache-ant-1.8.2\bin;$env:PATH" >> $env:GITHUB_ENV
+  
+    - name: Verify Ant installation
+      run: ant -version
+
+    - name: Build with Ant
+      run: ant compile
+
+    - name: Run tests
+      run: ant run
+
